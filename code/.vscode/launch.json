@@ -5,10 +5,31 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Python: Test",
+            "type": "python",
+            "request": "launch",
+            "program": "test.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Part1",
+            "type": "python",
+            "request": "launch",
+            "program": "proj1_part1.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Part2",
             "type": "python",
             "request": "launch",
             "program": "proj1_part2.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Part3",
+            "type": "python",
+            "request": "launch",
+            "program": "proj1_part3.py",
             "console": "integratedTerminal"
         }
     ]
