@@ -39,7 +39,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[11pt]{article}
-
+\usepackage{vntex}
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[colorlinks = true,
@@ -52,6 +52,10 @@
 \usepackage{microtype}
 \usepackage{times}
 \usepackage{booktabs}
+\usepackage{gensymb}
+\usepackage{amsmath}
+\usepackage{float}
+
 
 % python code format: https://github.com/olivierverdier/python-latex-highlighting
 \usepackage{pythonhighlight}
@@ -62,13 +66,13 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{Project 1 Writeup}
-\rhead{CSCI 1430}
+\lhead{Image Filtering and Hybrid Images}
+\rhead{Xử lý ảnh số và thị giác máy tính}
 \rfoot{\thepage}
 
 \date{}
 
-\title{\vspace{-1cm}Project 1 Writeup}
+\title{\vspace{-1cm}Bài tập lớn 1: Image Filtering and Hybrid Images}
 
 
 \begin{document}
@@ -76,91 +80,218 @@
 \vspace{-2cm}
 \thispagestyle{fancy}
 
-\section*{Instructions}
+\section*{Giới thiệu}
+Bài tập lớn này tập trung vào việc hiện thực hàm tích chập (convolution) và sử dụng nó để sinh ra ảnh lai (hybrid image). Ảnh lai được xây dựng bằng cách pha trộn giữa tần số cao và tần số thấp của 2 ảnh khác nhau, chúng ta có thể tạo ra ảnh lại giữa hai ảnh ban đầu.
+
+\section*{Chi tiết hiện thực}
+\subsection*{Lọc ảnh}
+Các bước hiện thực:
 \begin{itemize}
-  \item Provide an overview about how your project functions. 
-  \item Describe any interesting decisions you made to write your algorithm.
-  \item Show and discuss the results of your algorithm.
-  \item Feel free to include code snippets, images, and equations.
-  \item List any extra credit implementation and result (optional).
-  \item Use as many pages as you need, but err on the short side.
-  \item \textbf{Please make this document anonymous.}
+    \item Xoay bộ lọc 180$^{\circ}$ trước khi thực hiện tích chập.
+    \item Trên từng kênh màu:
+        \begin{itemize}
+            \item Thêm padding vào kênh màu để ảnh đầu ra có kích thước bằng với ảnh đầu vào.
+            \item Áp dụng công thức tính dot product trên ma trận của ảnh và bộ lọc:
+                \begin{equation*}
+                    h[m,n] = \sum_{k,l} g[k,l]f[m+k,n+l]
+                \end{equation*}
+        \end{itemize}
 \end{itemize}
+Chi tiết hiện thực:
+\inputpython{code/my_imfilter.py}{1}{45}
 
-\section*{Project Overview}
+\subsection*{Ảnh lai}
+Một ảnh lai (hybrid) là tổng của ảnh thứ nhất lọc bởi bộ lọc tần số thấp (low-pass filter) và ảnh thứ hai lọc bởi bộ lọc tần số cao (high-pass filter). Đối với hình ảnh đầu tiên, áp dụng bộ lọc để xóa sạch các thành phần có tần số cao hơn ngưỡng và bảo toàn phần tần số thấp. Mặt khác, áp dụng cùng một bộ lọc cho hình ảnh thứ hai, sau đó trừ hình ảnh được lọc ra khỏi hình ảnh gốc để loại bỏ phần tần số thấp. Kết hợp các hình ảnh và có được hình ảnh lai.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. See Equation~\ref{eq:one}.
+Chi tiết hiện thực:
+\inputpython{code/hybrid_image.py}{1}{5}
 
-\begin{equation}
-a = b + c
-\label{eq:one}
-\end{equation}
+\subsection*{Tích chập dựa trên biến đổi Fourier}
+Hiện thực phép tích chập dựa theo công thức:
+\begin{equation*}
+    g*h=F^{-1}[F(g)F(h)]
+\end{equation*}
+Chi tiết hiện thực:
+\inputpython{code/my_imfilter_fft.py}{1}{34}
 
-\section*{Implementation Detail}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-My code snippet highlights an interesting point.
-\begin{python}
-one = 1;
-two = one + one;
-if two == 2
-    disp( 'This computer is not broken.' );
-end
-\end{python}
-
-\section*{Result}
-
-\begin{enumerate}
-    \item Result 1 was a total failure, because...
-    \item Result 2 (Figure~\ref{fig:result1}, left) was surprising, because...
-    \item Result 3 (Figure~\ref{fig:result1}, right) blew my socks off, because...
-\end{enumerate}
-
+\section*{Kết quả}
+\subsection*{Lọc ảnh}
+Ảnh 1:
 \begin{figure}[h]
     \centering
-    \includegraphics[width=5cm]{placeholder.jpg}
-    \includegraphics[width=5cm]{placeholder.jpg}
-    \caption{\emph{Left:} My result was spectacular. \emph{Right:} Curious.}
-    \label{fig:result1}
+    \includegraphics[width=5cm]{images/results_part1/cat/01_cat.jpg}
+    \caption{Ảnh gốc}
 \end{figure}
 
-My results are summarized in Table~\ref{tab:table1}.
+Ảnh sau khi lọc:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part1/cat/blur_image.jpg}
+    \includegraphics[width=5cm]{images/results_part1/cat/large_blur_image.jpg}
+    \caption{\emph{Left:} Small blur. \emph{Right:} Large blur.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part1/cat/sobel_image.jpg}
+    \includegraphics[width=5cm]{images/results_part1/cat/laplacian_image.jpg}
+    \caption{\emph{Left:} Sobel image. \emph{Right:} Laplacian image.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part1/cat/high_pass_image.jpg}
+    \caption{High pass "filter"}
+\end{figure}
+
+Ảnh 2:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=5cm]{images/results_part1/image1/6_image1.jpg}
+    \caption{Ảnh gốc}
+\end{figure}
+
+Ảnh sau khi lọc:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part1/image1/blur_image.jpg}
+    \includegraphics[width=5cm]{images/results_part1/image1/large_blur_image.jpg}
+    \caption{\emph{Left:} Small blur. \emph{Right:} Large blur.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part1/image1/sobel_image.jpg}
+    \includegraphics[width=5cm]{images/results_part1/image1/laplacian_image.jpg}
+    \caption{\emph{Left:} Sobel image. \emph{Right:} Laplacian image.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part1/image1/high_pass_image.jpg}
+    \caption{High pass "filter"}
+\end{figure}
+
+\subsection*{Ảnh lai}
+\text{Cặp ảnh 1:}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/cat_dog/01_cat.jpg}
+    \includegraphics[width=5cm]{images/results_part2/cat_dog/01_dog.jpg}
+    \caption{\emph{Left:} Ảnh gốc. \emph{Right:} Ảnh gốc.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/cat_dog/high_frequencies.jpg}
+    \includegraphics[width=5cm]{images/results_part2/cat_dog/low_frequencies.jpg}
+    \caption{\emph{Left:} high-pass image. \emph{Right:} low-pass image.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{images/results_part2/cat_dog/hybrid_image_scales.jpg}
+    \caption{Ảnh lai}
+\end{figure}
+
+\textbf{Cặp ảnh 2:}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/motorcycle_bicycle/02_bicycle.jpg}
+    \includegraphics[width=5cm]{images/results_part2/motorcycle_bicycle/02_motorcycle.jpg}
+    \caption{\emph{Left:} Ảnh gốc. \emph{Right:} Ảnh gốc.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/motorcycle_bicycle/high_frequencies.jpg}
+    \includegraphics[width=5cm]{images/results_part2/motorcycle_bicycle/low_frequencies.jpg}
+    \caption{\emph{Left:} high-pass image. \emph{Right:} low-pass image.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{images/results_part2/motorcycle_bicycle/hybrid_image_scales.jpg}
+    \caption{Ảnh lai}
+\end{figure}
+
+\textbf{Cặp ảnh 3:}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/bird_plane/03_plane.jpg}
+    \includegraphics[width=5cm]{images/results_part2/bird_plane/03_bird.jpg}
+    \caption{\emph{Left:} Ảnh gốc. \emph{Right:} Ảnh gốc.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/bird_plane/high_frequencies.jpg}
+    \includegraphics[width=5cm]{images/results_part2/bird_plane/low_frequencies.jpg}
+    \caption{\emph{Left:} high-pass image. \emph{Right:} low-pass image.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{images/results_part2/bird_plane/hybrid_image_scales.jpg}
+    \caption{Ảnh lai}
+\end{figure}
+
+
+\textbf{Cặp ảnh 4:}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/marilyn_einstein/04_einstein.jpg}
+    \includegraphics[width=5cm]{images/results_part2/marilyn_einstein/04_marilyn.jpg}
+    \caption{\emph{Left:} Ảnh gốc. \emph{Right:} Ảnh gốc.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/marilyn_einstein/high_frequencies.jpg}
+    \includegraphics[width=5cm]{images/results_part2/marilyn_einstein/low_frequencies.jpg}
+    \caption{\emph{Left:} high-pass image. \emph{Right:} low-pass image.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{images/results_part2/marilyn_einstein/hybrid_image_scales.jpg}
+    \caption{Ảnh lai}
+\end{figure}
+
+\textbf{Cặp ảnh 5:}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/fish_submarine/05_submarine.jpg}
+    \includegraphics[width=5cm]{images/results_part2/fish_submarine/05_fish.jpg}
+    \caption{\emph{Left:} Ảnh gốc. \emph{Right:} Ảnh gốc.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=5cm]{images/results_part2/fish_submarine/high_frequencies.jpg}
+    \includegraphics[width=5cm]{images/results_part2/fish_submarine/low_frequencies.jpg}
+    \caption{\emph{Left:} high-pass image. \emph{Right:} low-pass image.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{images/results_part2/fish_submarine/hybrid_image_scales.jpg}
+    \caption{Ảnh lai}
+\end{figure}
+
+Kết quả so sánh giữa hai cách hiện thực convolution khác nhau trong bảng ~\ref{tab:table1} (đơn vị giây).
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{lr}
-        \toprule
-        Condition & Time (seconds) \\
-        \midrule
-        Test 1 & 1 \\
-        Test 2 & 1000 \\
-        \bottomrule
+    \begin{tabular}{|l|r|r|}
+        \hline
+                        & Basic convolution & Convolution using FFT\\
+        \hline
+        Lọc ảnh con mèo với gaussian filter & 3.4501  & 0.6921 \\
+        \hline
+        Lọc ảnh con mèo với nhiều bộ lọc trong part 1 & 8.4731  & 1.1128 \\
+        \hline
+        Tạo ảnh lai giữa ảnh chó và ảnh mèo & 11.1120  & 1.4636 \\
+        \hline
     \end{tabular}
-    \caption{Stunning revelation about the efficiency of my code.}
+    \caption{Kết quả so sánh giữa hai cách hiện thực convolution khác nhau.}
     \label{tab:table1}
 \end{table}
-
-\section*{Extra Credit (Optional)}
-\begin{enumerate}
-   
-    \item Implementation A, code snippets, and results
-        \begin{python}
-        one = 1;
-        two = one + one;
-        if two == 2
-            disp( 'This computer is not broken.' );
-        end
-        \end{python}
-    
-    \item Implementation B, code snippets, and results
-        \begin{python}
-        one = 1;
-        two = one + one;
-        if two == 2
-            disp( 'This computer is not broken.' );
-        end
-        \end{python}
-\end{enumerate}
 
 \end{document}

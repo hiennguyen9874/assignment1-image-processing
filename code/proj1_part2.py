@@ -9,6 +9,10 @@ from helpers import vis_hybrid_image, load_image, save_image
 
 from student import my_imfilter, gen_hybrid_image
 
+import time
+start_time = time.time()
+
+
 # Before trying to construct hybrid images, it is suggested that you
 # implement my_imfilter in helpers.py and then debug it using proj1_part1.py
 
@@ -17,8 +21,8 @@ from student import my_imfilter, gen_hybrid_image
 
 # Setup
 # Read images and convert to floating point format
-image1 = load_image('../data/01_dog.bmp')
-image2 = load_image('../data/01_cat.bmp')
+image1 = load_image('../data/01_dog.bmp')       # low
+image2 = load_image('../data/01_cat.bmp')       # high
 
 # display the dog and cat images
 plt.figure(figsize=(3, 3))
@@ -55,3 +59,5 @@ outHigh = np.clip(high_frequencies + 0.5, 0.0, 1.0)
 save_image('../results/high_frequencies.jpg', outHigh)
 save_image('../results/hybrid_image.jpg', hybrid_image)
 save_image('../results/hybrid_image_scales.jpg', vis)
+
+print("--- %s seconds ---" % (time.time() - start_time))

@@ -11,11 +11,15 @@ from helpers import load_image, save_image
 
 from student import my_imfilter_fft
 
+
+import time
+start_time = time.time()
+
 resultsDir = '..' + os.sep + 'results'
 if not os.path.exists(resultsDir):
     os.mkdir(resultsDir)
 
-test_image = load_image('../data/image1.jpg')
+test_image = load_image('../data/01_cat.bmp')
 
 test_image = rescale(test_image, 0.7, mode='reflect', multichannel=True)
 
@@ -27,7 +31,7 @@ identity_filter = np.asarray(
     [[0, 0, 0], [0, 1, 0], [0, 0, 0]], dtype=np.float32)
 identity_image = my_imfilter_fft(test_image, identity_filter)
 plt.imshow(identity_image)
-plt.show()
+#plt.show()
 done = save_image('../results/identity_image.jpg', identity_image)
 
 
@@ -40,7 +44,7 @@ blur_filter = np.ones((3, 3), dtype=np.float32)
 blur_filter /= np.sum(blur_filter, dtype=np.float32)
 blur_image = my_imfilter_fft(test_image, blur_filter)
 plt.imshow(blur_image)
-plt.show()
+#plt.show()
 done = save_image(resultsDir + os.sep + 'blur_image.jpg', blur_image)
 
 
@@ -57,7 +61,7 @@ large_blur_image = my_imfilter_fft(test_image, large_1d_blur_filter)
 # notice the T operator which transposes the filter
 large_blur_image = my_imfilter_fft(large_blur_image, large_1d_blur_filter.T)
 plt.imshow(large_blur_image)
-plt.show()
+#plt.show()
 done = save_image(resultsDir + os.sep +
                   'large_blur_image.jpg', large_blur_image)
 
@@ -80,7 +84,7 @@ sobel_image = my_imfilter_fft(test_image, sobel_filter)
 # 0.5 added because the output image is centered around zero otherwise and mostly black
 sobel_image = np.clip(sobel_image+0.5, 0.0, 1.0)
 plt.imshow(sobel_image)
-plt.show()
+#plt.show()
 done = save_image(resultsDir + os.sep + 'sobel_image.jpg', sobel_image)
 
 
@@ -95,7 +99,7 @@ laplacian_image = my_imfilter_fft(test_image, laplacian_filter)
 laplacian_image = np.clip(laplacian_image+0.5, 0.0, 1.0)
 plt.figure()
 plt.imshow(laplacian_image)
-plt.show()
+#plt.show()
 done = save_image(resultsDir + os.sep + 'laplacian_image.jpg', laplacian_image)
 
 # High pass "filter" alternative
@@ -103,5 +107,7 @@ high_pass_image = test_image - blur_image
 high_pass_image = np.clip(high_pass_image+0.5, 0.0, 1.0)
 plt.figure()
 plt.imshow(high_pass_image)
-plt.show()
+#plt.show()
 done = save_image(resultsDir + os.sep + 'high_pass_image.jpg', high_pass_image)
+
+print("--- %s seconds ---" % (time.time() - start_time))

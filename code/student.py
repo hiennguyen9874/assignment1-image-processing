@@ -35,7 +35,7 @@ def my_imfilter(image, kernel):
 
     if (kernel_row % 2 == 0) or (kernel_col % 2 == 0):
         raise Exception('Kernel is not of odd dimensions')
-
+    
     color_channel = []
     num_channel = 1
     if len(image.shape) == 2:
@@ -48,7 +48,7 @@ def my_imfilter(image, kernel):
             color_channel.append(image[:, :, i])
     else:
         return
-
+    
     padding_row = kernel_row//2
     padding_col = kernel_col//2
 
@@ -71,7 +71,6 @@ def my_imfilter(image, kernel):
     else:
         filtered_image = np.stack(color_channel, axis=2)
     ##################
-
     return filtered_image
 
 
@@ -119,15 +118,13 @@ def my_imfilter_fft(image, kernel):
     for i in range(num_channel):
         channel_size = np.array(color_channel[i].shape)
         kernel_size = np.array(kernel.shape)
-        size = channel_size + kernel_size
+        size = channel_size + kernel_size - 1
         fsize = np.array([np.max(size), np.max(size)])
 
         channel_fft = np.fft.fft2(color_channel[i], fsize)
         kernel_fft = np.fft.fft2(kernel, fsize)
-        color_channel[i] = np.fft.ifft2(channel_fft*kernel_fft)
-        color_channel[i] = np.array(color_channel[i].real, dtype=np.float32)
-        color_channel[i] = color_channel[i][h:channel_size[0] + h, h:channel_size[1] + h]
-        
+        color_channel[i] = (np.real(np.fft.ifft2(channel_fft*kernel_fft)))[h:channel_size[0] + h, h:channel_size[1] + h]
+
     # print('my_imfilter_fft function in student.py is not implemented')
     if num_channel == 1:
         filtered_image = color_channel[0]
